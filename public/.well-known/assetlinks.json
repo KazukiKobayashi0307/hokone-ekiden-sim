@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.vercel.hokone_ekiden_sim",
+        "sha256_cert_fingerprints": ["BF:47:32:85:B5:70:FE:F4:FD:3F:F5:EB:CA:11:E9:67:97:5D:90:A8:31:FF:31:F6:37:A0:8B:04:8C:7F:9D:28"]
+      }
+    }]
