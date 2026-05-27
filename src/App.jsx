@@ -46,8 +46,8 @@ const TRS=[
 const UNIV=[["緑原学院大学",96,200,{speed:8,stamina:10,stability:8,uphill:10,downhill:10,solo:10,pack:6,track:7,road:10},9,10,9,"都市型キャンパスと郊外型キャンパスを併せ持つ私立大学。フレッシュグリーンの襷で知られる近年の駅伝強豪校。"],["藤駒大学",95,200,{speed:10,stamina:10,stability:7,uphill:8,downhill:10,solo:8,pack:8,track:9,road:9},5,9,8,"曹洞宗系の私立大学。冬の絶対王者と呼ばれる伝統校で、近年も優勝を重ねる強豪。"],["徳岳院大学",93,180,{speed:7,stamina:10,stability:10,uphill:6,downhill:6,solo:7,pack:9,track:7,road:10},8,9,8,"古典と歴史学に強い私立大学。近年の駅伝強化で出雲駅伝優勝経験を持つ新興強豪。"],["多摩法科大学",92,200,{speed:10,stamina:9,stability:7,uphill:6,downhill:8,solo:9,pack:10,track:10,road:9},7,9,9,"法学部の伝統で知られる私立大学。古豪駅伝部の復活を目指す。白地に赤いCマークの襷が象徴。"],["翔才大学",90,80,{speed:6,stamina:9,stability:7,uphill:9,downhill:7,solo:7,pack:3,track:5,road:7},9,8,6,"薬学・経営学を擁する私立大学。山の名将と呼ばれる指導者の下で5区を制する。"],["高田大学",89,200,{speed:10,stamina:7,stability:6,uphill:7,downhill:7,solo:7,pack:7,track:9,road:7},7,7,10,"都の西北にキャンパスを持つ私立の名門。三大駅伝制覇経験を持つ伝統校。エンジ色の襷。"],["八王子公明大学",88,140,{speed:7,stamina:9,stability:4,uphill:7,downhill:7,solo:7,pack:7,track:7,road:9},9,8,8,"八王子の郊外にキャンパスを持つ私立大学。近年急成長し箱根駅伝で旋風を起こした新進校。"],["駿仙堂大学",87,130,{speed:9,stamina:8,stability:7,uphill:8,downhill:7,solo:8,pack:8,track:10,road:7},10,8,8,"医学・スポーツ健康科学に強い私立大学。OBに長距離の名選手が多い駅伝の名門。"],["豊洋大学",86,160,{speed:6,stamina:10,stability:8,uphill:10,downhill:5,solo:8,pack:9,track:5,road:8},8,9,8,"「その1秒をけずりだせ」が標語の私立大学。鉄紺の襷で平成期に黄金時代を築いた強豪。"],["孝海大学",85,150,{speed:10,stamina:7,stability:6,uphill:5,downhill:9,solo:6,pack:8,track:9,road:5},9,7,7,"全国に系列校を持つ総合私立大学。湘南キャンパスを拠点とし箱根駅伝総合優勝経験あり。"],["東成大学",84,75,{speed:7,stamina:7,stability:5,uphill:9,downhill:7,solo:6,pack:3,track:5,road:7},6,7,9,"市ヶ谷にキャンパスを構える私立の名門。オレンジの襷を背負う古豪駅伝部。"],["栄東大学",83,75,{speed:7,stamina:6,stability:10,uphill:6,downhill:6,solo:10,pack:6,track:6,road:9},10,10,7,"医療系学部を擁する私立大学。シード権常連の安定した中堅強豪校。赤の襷。"],["禎義大学",82,145,{speed:8,stamina:6,stability:3,uphill:7,downhill:6,solo:7,pack:8,track:8,road:7},8,5,9,"明治期創立の私立名門大学。紫紺の襷で全日本大学駅伝制覇経験を持つ。"],["大和体育大学",81,70,{speed:8,stamina:6,stability:6,uphill:9,downhill:9,solo:6,pack:6,track:7,road:6},9,7,5,"スポーツ系の単科色が強い私立大学。多くのオリンピアンを輩出する伝統校。"],["関東国際大学",80,85,{speed:8,stamina:8,stability:5,uphill:5,downhill:6,solo:7,pack:9,track:5,road:7},5,6,3,"川越にキャンパスを置く私立大学。外国人留学生を積極受入し近年急成長した新興校。"],["新座大学",79,65,{speed:7,stamina:6,stability:6,uphill:6,downhill:6,solo:6,pack:6,track:6,road:6},5,6,9,"池袋にキャンパスを持つキリスト教系私立大学。55年ぶりに箱根に帰還した古豪。"],["東京文化大学",78,40,{speed:4,stamina:8,stability:6,uphill:8,downhill:4,solo:7,pack:4,track:4,road:6},7,7,7,"東松山にキャンパスを構える私立大学。緑のシマウマ柄の襷で知られた古豪。"],["相模大学",77,40,{speed:9,stamina:6,stability:5,uphill:5,downhill:5,solo:5,pack:5,track:5,road:8},6,7,8,"横浜に位置する私立大学。1990年代に箱根駅伝総合優勝経験あり。海老茶の襷。"],["瑞穂大学",76,40,{speed:6,stamina:6,stability:6,uphill:6,downhill:6,solo:6,pack:6,track:6,road:6},7,4,8,"総合学部数日本最大級の私立マンモス大学。古くは三大駅伝制覇経験ある名門。"],["伯旭大学",75,20,{speed:4,stamina:5,stability:4,uphill:5,downhill:4,solo:5,pack:4,track:5,road:4},7,8,6,"国際関係に強い私立大学。文京区茗荷谷にキャンパスを構え外国人留学生も活躍。"],["甲州学院大学",74,35,{speed:5,stamina:6,stability:3,uphill:4,downhill:4,solo:4,pack:4,track:4,road:4},6,6,4,"山梨甲府の私立大学。スポーツ強化校として外国人留学生制度の先駆け。プリンスブルーの襷。"],["健忠大学",73,15,{speed:5,stamina:5,stability:6,uphill:5,downhill:5,solo:5,pack:6,track:5,road:5},4,6,8,"経済・経営の私立大学。生田にキャンパスを持つ古豪駅伝部の復活を目指す。"],["篤志館大学",72,15,{speed:5,stamina:5,stability:5,uphill:5,downhill:5,solo:5,pack:5,track:5,road:5},5,5,7,"町田と世田谷に拠点を置く私立大学。武道・体育で知られる伝統校。"],["修陽学院大学",71,35,{speed:6,stamina:8,stability:7,uphill:7,downhill:4,solo:8,pack:3,track:4,road:9},4,9,3,"千葉我孫子の私立大学。シード権常連を目指す中堅校。緑の襷。"],["伊勢崎大学",70,10,{speed:2,stamina:5,stability:2,uphill:2,downhill:2,solo:2,pack:2,track:2,road:2},4,7,2,"群馬に拠点を置く私立大学。地方からの箱根挑戦校として知られる。"],["関東農業大学",69,15,{speed:7,stamina:5,stability:5,uphill:5,downhill:5,solo:5,pack:5,track:8,road:5},4,4,8,"農学・食品系の伝統ある私立大学。世田谷キャンパスを拠点とする。大根踊りで有名。"],["茨城科学大学",68,15,{speed:6,stamina:6,stability:6,uphill:6,downhill:6,solo:7,pack:7,track:6,road:6},10,5,9,"筑波研究学園都市の国立大学。学術と体育の両立を掲げる古豪。紫の襷。"],["福澤大学",67,5,{speed:1,stamina:1,stability:4,uphill:2,downhill:2,solo:2,pack:3,track:1,road:1},10,2,10,"塾を起源とする私立名門大学。学業優先の文武両道で箱根帰還を目指す。"],["清水台大学",66,10,{speed:3,stamina:6,stability:7,uphill:3,downhill:3,solo:5,pack:3,track:3,road:4},6,7,4,"埼玉飯能の私立大学。法学・経済を擁する中堅校。"],["清博大学",65,10,{speed:2,stamina:3,stability:2,uphill:3,downhill:2,solo:2,pack:2,track:2,road:4},5,3,3,"千葉柏の私立大学。道徳教育を掲げる名門中堅校。"],["遊羅師安大学",64,10,{speed:4,stamina:4,stability:3,uphill:5,downhill:5,solo:4,pack:3,track:4,road:3},4,4,7,"武蔵野にキャンパスを置く私立大学。1980年代に箱根駅伝総合優勝経験あり。"],["横浜学院大学",63,5,{speed:2,stamina:2,stability:2,uphill:2,downhill:2,solo:2,pack:2,track:2,road:2},2,5,6,"横浜のキリスト教系私立大学。古くは関東1部にいた中堅校。"],["令和外国語大学",62,5,{speed:1,stamina:1,stability:1,uphill:1,downhill:1,solo:1,pack:1,track:1,road:1},2,2,2,"埼玉加須の私立大学。スポーツ強化で近年箱根予選参戦。"],["富士野学院大学",61,5,{speed:1,stamina:1,stability:1,uphill:1,downhill:1,solo:1,pack:1,track:1,road:1},2,2,2,"埼玉狭山の私立大学。新興校として箱根挑戦を続ける。"],["桃美森大学",60,5,{speed:1,stamina:1,stability:1,uphill:1,downhill:1,solo:1,pack:1,track:1,road:1},3,6,4,"町田の私立大学。リベラルアーツ教育を掲げる総合校。"],["流通商業大学",59,5,{speed:3,stamina:3,stability:3,uphill:3,downhill:3,solo:3,pack:3,track:3,road:3},6,6,5,"茨城龍ケ崎の私立大学。物流・スポーツ強化校として知られる。"],["豊洲工業大学",58,5,{speed:3,stamina:3,stability:3,uphill:3,downhill:3,solo:3,pack:3,track:3,road:3},5,3,7,"東京豊洲の理工系私立大学。工学系の名門で文武両道を目指す。"],["禎義学院大学",57,5,{speed:2,stamina:2,stability:2,uphill:2,downhill:2,solo:2,pack:2,track:2,road:2},4,5,8,"白金に拠点を置くキリスト教系私立大学。リベラルな校風。"],["武蔵薬科大学",56,5,{speed:2,stamina:2,stability:2,uphill:2,downhill:2,solo:2,pack:2,track:2,road:2},7,6,3,"埼玉伊奈の薬学系私立大学。文武両道で箱根予選参戦を続ける。"]];
 const SK=["speed","stamina","stability","uphill","downhill","solo","pack","track","road"];
 const SL={speed:"速",stamina:"持",stability:"安",uphill:"登",downhill:"降",solo:"単",pack:"集",track:"ト",road:"ロ"};
-const GR=v=>v>=90?"S":v>=80?"A":v>=70?"B":v>=60?"C":v>=50?"D":v>=40?"E":"F";
-const GC=g=>({S:"#c0392b",A:"#e67e22",B:"#d4ac0d",C:"#27ae60",D:"#7f8c8d",E:"#bdc3c7",F:"#bdc3c7"}[g]);
+const GR=v=>v>=95?"SS":v>=85?"S":v>=75?"A":v>=65?"B":v>=55?"C":v>=45?"D":v>=35?"E":v>=25?"F":"G";
+const GC=g=>({SS:"#FF1F5A",S:"#c0392b",A:"#e67e22",B:"#d4ac0d",C:"#27ae60",D:"#7f8c8d",E:"#bdc3c7",F:"#bdc3c7",G:"#bdc3c7"}[g]);
 const RL=["×","▽","△","○","◎"];
 function rFacLv(str,t,m,c,rp){return{training:t||1,medical:m||1,coaching:c||1,reputation:rp||1};}
 let _id=0;
@@ -551,7 +551,17 @@ export default function Game(){
     }));
     const e5=Object.entries(recAsgn).filter(([,v])=>v==="5k").map(([id])=>rs.find(r=>r.id===+id));const e10=Object.entries(recAsgn).filter(([,v])=>v==="10k").map(([id])=>rs.find(r=>r.id===+id));const rivR5=[],rivR10=[];rivals.forEach(rv=>{rv.runners.filter(r=>!r.injured).forEach(r=>{if(Math.random()<0.5){if(Math.random()<0.5)rivR5.push({...r,univName:rv.name});else rivR10.push({...r,univName:rv.name});}});});const r5=[...e5.map(r=>({runner:r,time:cTrk(5000,r),univ:teamName,yr:r.year})),...rivR5.map(r=>({runner:r,time:cTrk(5000,r),univ:r.univName,yr:r.year}))].sort((a,b)=>a.time-b.time);const r10=[...e10.map(r=>({runner:r,time:cTrk(10000,r),univ:teamName,yr:r.year})),...rivR10.map(r=>({runner:r,time:cTrk(10000,r),univ:r.univName,yr:r.year}))].sort((a,b)=>a.time-b.time);setRs(p=>p.map(r=>{const f5=r5.find(x=>x.runner.id===r.id&&x.univ===teamName);const f10=r10.find(x=>x.runner.id===r.id&&x.univ===teamName);if(!f5&&!f10)return r;const nr={...r,stats:raceGrow(r),fatigue:Math.min(100,r.fatigue+20)};if(f5&&(!nr.pb5k||f5.time<nr.pb5k))nr.pb5k=f5.time;if(f10&&(!nr.pb10k||f10.time<nr.pb10k))nr.pb10k=f10.time;return nr;}));setRivals(prev=>prev.map(rv=>{const upd=rv.runners.map(r=>{const f5=r5.find(x=>x.runner.id===r.id&&x.univ===rv.name);const f10=r10.find(x=>x.runner.id===r.id&&x.univ===rv.name);if(!f5&&!f10)return r;const nr={...r,stats:raceGrow(r)};if(f5&&(!nr.pb5k||f5.time<nr.pb5k))nr.pb5k=f5.time;if(f10&&(!nr.pb10k||f10.time<nr.pb10k))nr.pb10k=f10.time;return nr;});return{...rv,runners:upd};}));setRecs(p=>{let n=addBR(p,"t5",r5.map(r=>({name:r.runner.name,univ:r.univ,time:r.time,grade:r.yr,yr:gameYear,ev:recEv.n,foreign:r.runner.foreign})));return addBR(n,"t10",r10.map(r=>({name:r.runner.name,univ:r.univ,time:r.time,grade:r.yr,yr:gameYear,ev:recEv.n,foreign:r.runner.foreign})));});setRecRes({r5,r10,name:recEv.n,myUniv:teamName});setPh("rec_res");},[recAsgn,rs,recEv,gameYear,tn,rivals]);
 
-  const toggleQS=useCallback(rid=>{setQualSel(p=>p.includes(rid)?p.filter(x=>x!==rid):p.length>=12?p:[...p,rid]);},[]);
+  const toggleQS=useCallback(rid=>{setQualSel(p=>{
+    if(p.includes(rid))return p.filter(x=>x!==rid);
+    if(p.length>=12)return p;
+    /* Limit: only 1 foreign student can be selected for own team */
+    const newR=rs.find(r=>r.id===rid);
+    if(newR&&newR.foreign){
+      const alreadyHasForeign=p.some(id=>{const r=rs.find(x=>x.id===id);return r&&r.foreign;});
+      if(alreadyHasForeign){alert("外国人留学生は1名までしか出走できません。");return p;}
+    }
+    return[...p,rid];
+  });},[rs]);
   const runHakQ=useCallback(()=>{const sel=qualSel.map(rid=>rs.find(r=>r.id===rid));const times=sel.map(r=>({runner:r,time:cHalf(r),univ:teamName,yr:r.year})).sort((a,b)=>a.time-b.time);const my=times.slice(0,10).reduce((s,t)=>s+t.time,0);setRs(p=>p.map(r=>{const d=times.find(x=>x.runner.id===r.id);if(!d)return r;const nr={...r,stats:raceGrow(r),fatigue:Math.min(100,r.fatigue+15)};if(!nr.pbHalf||d.time<nr.pbHalf)nr.pbHalf=d.time;return nr;}));setRecs(p=>addBR(p,"half",times.map(t=>({name:t.runner.name,univ:teamName,time:t.time,grade:t.runner.year,yr:gameYear,ev:ekAlias.hakone+"予選会",foreign:t.runner.foreign}))));
     /* Only non-seeded rivals participate in qualifier (seeded = prevHakone top 10) */
     const nonSeeded=rivals.filter(rv=>!(prevHakoneRanks[rv.name]&&prevHakoneRanks[rv.name]<=10));
@@ -568,7 +578,21 @@ export default function Game(){
     }
     setQualRes({times,allTimes:allParticipantTimes,rivs:allT,rank,q:rank<=10,my,type:"hak",top100Me,top20Me,qBonus});setPh("qual_res");setTurn(turn+1);},[qualSel,rs,rivals,tn,turn,gameYear,prevHakoneRanks]);
   const toggleRA=useCallback((rid,ev)=>{setRecAsgn(p=>{const n={...p};if(n[rid]===ev)delete n[rid];else{if(Object.values(n).filter(v=>v===ev).length>=8)return p;n[rid]=ev;}return n;});},[]);
-  const assignR=useCallback(sid=>{if(selR===null)return;if(asgnSet.has(selR)&&asgn[sid]!==selR)return;setAsgn(p=>{const n={...p};Object.keys(n).forEach(k=>{if(n[k]===selR)delete n[k];});n[sid]=selR;return n;});setSelR(null);},[selR,asgnSet,asgn]);
+  const assignR=useCallback(sid=>{
+    if(selR===null)return;
+    if(asgnSet.has(selR)&&asgn[sid]!==selR)return;
+    /* Limit: only 1 foreign student in ekiden assignment */
+    const newR=rs.find(r=>r.id===selR);
+    if(newR&&newR.foreign){
+      const otherForeign=Object.entries(asgn).some(([k,v])=>{
+        if(k===String(sid))return false;
+        if(v===selR)return false;
+        const r=rs.find(x=>x.id===v);return r&&r.foreign;
+      });
+      if(otherForeign){alert("外国人留学生は1名までしか出走できません。");return;}
+    }
+    setAsgn(p=>{const n={...p};Object.keys(n).forEach(k=>{if(n[k]===selR)delete n[k];});n[sid]=selR;return n;});setSelR(null);
+  },[selR,asgnSet,asgn,rs]);
   const ek=curEk?EKS[curEk]:null,allAsgn=ek?Object.keys(asgn).length===ek.cnt:false;
 
   const runEkCommon=useCallback((isWatch)=>{const secs=ek.sec;const nR=curEk==="izumo"?10:curEk==="zennihon"?15:20;
@@ -780,6 +804,23 @@ export default function Game(){
         <div><b>冬〜年始</b>: {ekAlias.hakone}本戦。年末に新入生が入学</div>
         <div><b>年始〜春</b>: ハーフマラソンや記録会で実力を磨くオフシーズン</div>
         <div style={{marginTop:6,fontSize:12,color:"var(--t3)"}}>毎ターン練習メニューを選んで選手を育てましょう。</div>
+        <div style={{marginTop:10,fontSize:12,lineHeight:1.8}}>
+          <div style={{fontWeight:700,color:"var(--ac)",marginBottom:4}}>📋 練習メニュー (全12種)</div>
+          <div>・<b>バランス</b>：全能力を均等に伸ばす。疲労が少なく安定した育成。</div>
+          <div>・<b>基本走力</b>：スピード・スタミナ・安定感の3点を強化。万能型エースを目指す育成。</div>
+          <div>・<b>スピード</b>：速度を大きく伸ばす。トラック能力も上昇。短距離型育成向け。</div>
+          <div>・<b>スタミナ</b>：持久力を大きく伸ばす。駅伝の長距離区間で活きる。疲労が大きい。</div>
+          <div>・<b>メンタル</b>：安定感を大きく伸ばす。単独走・集団走も向上し、本番に強い選手に。</div>
+          <div>・<b>上り</b>：登坂能力を強化。山区間({ekAlias.hakone}5区など)のスペシャリスト育成に。</div>
+          <div>・<b>下り</b>：降坂能力を強化。山下り区間({ekAlias.hakone}6区など)の対策に。</div>
+          <div>・<b>集団走</b>：集団内での走力を伸ばす。集団走能力が大きく上昇。</div>
+          <div>・<b>単独走</b>：単独での走力を伸ばす。エース区間や独走シーンで強い選手に。</div>
+          <div>・<b>トラック</b>：トラック走を強化。5000m・10000mの自己ベスト更新を狙う練習。</div>
+          <div>・<b>ロード</b>：ロード走を強化。駅伝・ハーフマラソン向けの実戦的な練習。</div>
+          <div>・<b>{ekAlias.hakone}対策</b>：スタミナ・登坂・ロードを重点強化。{ekAlias.hakone}の山区間と長距離区間を見据えた特化練習。</div>
+          <div style={{marginTop:6,color:"var(--t3)",fontSize:11}}>※ 練習メニューは選手ごとに個別設定可能。疲労が高い時は「休養」を選びましょう。</div>
+          <div style={{marginTop:4,color:"var(--gold)",fontSize:11}}>※ 練習効果は施設レベル・コーチレベル・秘蔵っ子設定によって大きく変わります。</div>
+        </div>
       </div>
     </div>
 
@@ -1127,7 +1168,7 @@ export default function Game(){
     const ekOrder={[ekAlias.izumo]:1,[ekAlias.zennihon]:2,[ekAlias.hakone]:3,"出雲駅伝":1,"全日本大学駅伝":2,"箱根駅伝":3};
     const ekNames=recTab==="ek"?[...new Set((recs.ek||[]).map(r=>r.ekiden))].sort((a,b)=>(ekOrder[a]||99)-(ekOrder[b]||99)):[];
     return(<><style>{CSS}</style><div style={{minHeight:"100vh",background:"var(--bg)",padding:14}}><div style={{maxWidth:700,margin:"0 auto"}} className="fi">
-    <div style={{display:"flex",justifyContent:"space-between",marginBottom:12}}><h2 className="sf">📊 記録データベース</h2><div style={{display:"flex",gap:6}}><button onClick={()=>setPh("hall")} style={{padding:"6px 14px",borderRadius:7,background:"var(--gold)",color:"#fff",fontWeight:700,border:"none"}}>🏆 殿堂</button><button onClick={()=>setPh(turn>48?"year_end":"main")} style={{padding:"6px 18px",borderRadius:7,background:"var(--card)",color:"var(--t)",border:"1px solid var(--bdr)"}}>← 戻る</button></div></div>
+    <div style={{display:"flex",justifyContent:"space-between",marginBottom:12,flexWrap:"wrap",gap:6}}><h2 className="sf">📊 記録データベース</h2><div style={{display:"flex",gap:6,flexWrap:"wrap"}}><button onClick={()=>setPh("hall")} style={{padding:"6px 14px",borderRadius:7,background:"var(--gold)",color:"#fff",fontWeight:700,border:"none"}}>🏆 殿堂</button><button onClick={()=>setPh("hof_players")} style={{padding:"6px 14px",borderRadius:7,background:"var(--gold)",color:"#fff",fontWeight:700,border:"none"}}>👑 殿堂入り選手</button><button onClick={()=>setPh(turn>48?"year_end":"main")} style={{padding:"6px 18px",borderRadius:7,background:"var(--card)",color:"var(--t)",border:"1px solid var(--bdr)"}}>← 戻る</button></div></div>
     <div style={{display:"flex",gap:4,marginBottom:8,flexWrap:"wrap"}}>{[{id:"t5",l:"5000m"},{id:"t10",l:"10000m"},{id:"half",l:"ハーフ"},{id:"ek",l:"駅伝区間"}].map(t=>(<button key={t.id} onClick={()=>{setRecTab(t.id);setRecFSec("");setRecFEk("");}} style={{padding:"5px 12px",borderRadius:6,fontWeight:700,background:recTab===t.id?"var(--ac)":"var(--card)",color:recTab===t.id?"#fff":"var(--t2)",border:"1px solid var(--bdr)"}}>{t.l}</button>))}</div>
     <div style={{display:"flex",gap:4,marginBottom:8,flexWrap:"wrap",alignItems:"center"}}>
       <select value={recFG} onChange={e=>setRecFG(+e.target.value)} style={{padding:"4px 8px",borderRadius:5,border:"1px solid var(--bdr)",fontSize:12}}><option value={0}>全学年</option><option value={1}>1年</option><option value={2}>2年</option><option value={3}>3年</option><option value={4}>4年</option></select>
