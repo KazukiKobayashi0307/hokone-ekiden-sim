@@ -439,7 +439,18 @@ export default function Game(){
     const initHist={};UNIV.forEach(u=>{initHist[u[0]]=[{initPts:u[2]}];});initHist["__ME__"]=[{initPts:10}];
     setScoutHist(initHist);setGameYear(1);setTurn(1);setLog([]);setAsgn({});setSelR(null);setCurEk(null);setRaceRes(null);setRecEv(null);setRecRes(null);setQualRes(null);setQualSel([]);setHakQ(false);setZenQ(false);setZenQTeams([]);setHakQTeams([]);setSRes({izumo:null,zennihon:null,hakone:null});setPrevHakone(null);setPrevZennihon(null);setPrevHakoneRanks({});setPrevZennihonRanks({});setViewRiv(-1);setRecs({t5:[],t10:[],half:[],ek:[]});setFac({trainSkill:{speed:1,stamina:1,stability:1,uphill:1,downhill:1,solo:1,pack:1,track:1,road:1},medical:1,coaching:1,reputation:1});setPrestige(30);setYearHistory([]);setDraftResult(null);setForceRest(false);setPh("main");
     if(teamCtrl)setFac({trainSkill:{speed:1,stamina:1,stability:1,uphill:1,downhill:1,solo:1,pack:1,track:1,road:1},medical:1,coaching:1,reputation:1});},[teamCtrl,foreignAllowed,tn,gameYear,rs,playerHOF,recs,teamRecords,ekStatsTotals,cumScoutPts,teamTitles,univAlias,ekAlias,careerHOF]);
-  const loadGame=useCallback(()=>{try{const raw=localStorage.getItem("hakone-save");if(!raw)return alert("セーブデータなし");const d=JSON.parse(raw);/* Backward compat: convert old fac.training number to trainSkill object */
+  const loadGame=useCallback(()=>{try{const raw=localStorage.getItem("hakone-save");if(!raw)return alert("セーブデータなし");const d=JSON.parse(raw);
+    /* ===== CRITICAL: repair duplicate/colliding runner IDs and restore the global _id counter ===== */
+    {
+      let maxId=-1;
+      (d.rs||[]).forEach(r=>{if(typeof r.id==="number")maxId=Math.max(maxId,r.id);});
+      (d.rivals||[]).forEach(rv=>(rv.runners||[]).forEach(r=>{if(typeof r.id==="number")maxId=Math.max(maxId,r.id);}));
+      /* Ensure own-team runner IDs are unique (React keys) — reassign any duplicate/invalid id */
+      const ownSeen=new Set();
+      (d.rs||[]).forEach(r=>{if(typeof r.id!=="number"||ownSeen.has(r.id)){r.id=++maxId;}ownSeen.add(r.id);});
+      _id=maxId+1;
+    }
+    /* Backward compat: convert old fac.training number to trainSkill object */
     if(d.fac&&typeof d.fac.training==="number"&&!d.fac.trainSkill){const lv=d.fac.training;d.fac={...d.fac,trainSkill:{speed:lv,stamina:lv,stability:lv,uphill:lv,downhill:lv,solo:lv,pack:lv,track:lv,road:lv}};}
     if(d.rivals)d.rivals.forEach(rv=>{if(rv.fac&&typeof rv.fac.training==="number"&&!rv.fac.trainSkill){const lv=rv.fac.training;rv.fac={...rv.fac,trainSkill:{speed:lv,stamina:lv,stability:lv,uphill:lv,downhill:lv,solo:lv,pack:lv,track:lv,road:lv}};}});
     Object.entries(d).forEach(([k,v])=>{const setters={tn:setTn,tc:setTc,gameYear:setGameYear,turn:setTurn,rs:setRs,rivals:setRivals,log:setLog,fac:setFac,prestige:setPrestige,hakQ:setHakQ,zenQ:setZenQ,zenQTeams:setZenQTeams,hakQTeams:setHakQTeams,sRes:setSRes,prevHakone:setPrevHakone,prevZennihon:setPrevZennihon,prevHakoneRanks:setPrevHakoneRanks,prevZennihonRanks:setPrevZennihonRanks,recs:setRecs,yearHistory:setYearHistory,scoutHist:setScoutHist,autoRest:setAutoRest,autoRestThreshold:setAutoRestThreshold,hallOfFame:setHallOfFame,teamRecords:setTeamRecords,foreignAllowed:setForeignAllowed,univAlias:setUnivAlias,ekAlias:setEkAlias,draftResult:setDraftResult,teamCtrl:setTeamCtrl,sectionRecords:setSectionRecords,playerHOF:setPlayerHOF,proteges:setProteges,protegeSlots:setProtegeSlots,consecutiveTripleCrowns:setConsecutiveTripleCrowns,teamTitles:setTeamTitles,consecutiveIzumo:setConsecutiveIzumo,consecutiveZennihon:setConsecutiveZennihon,consecutiveHakone:setConsecutiveHakone,ekStatsTotals:setEkStatsTotals,cumScoutPts:setCumScoutPts};if(setters[k])setters[k](v);});
