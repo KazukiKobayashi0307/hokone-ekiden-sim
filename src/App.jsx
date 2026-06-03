@@ -453,7 +453,13 @@ export default function Game(){
         /* race not yet started (or race data missing) → resume at assignment/watch screen */
         setPh(d._ph==="ek_watch"?"ek_watch":"ek_asgn");
       }
-    }else{setPh("main");}
+    }
+    /* Resume record-meet / qualifier / half selection screens (skip-prevention on app close) */
+    else if(d._ph==="rec_sel"&&d._recEv){setRecEv(d._recEv);setRecAsgn(d._recAsgn||{});setRecRes(null);setSelR(null);setPh("rec_sel");}
+    else if(d._ph==="zen_q"){setQualSel(d._qualSel||[]);setPh("zen_q");}
+    else if(d._ph==="hak_sel"){setQualSel(d._qualSel||[]);setSelR(null);setPh("hak_sel");}
+    else if(d._ph==="half_sel"){setQualSel(d._qualSel||[]);setSelR(null);setPh("half_sel");}
+    else{setPh("main");}
     }catch(e){console.error("[loadGame]",e);alert("ロード失敗");}}, []);
 
   const startNextYear=useCallback(()=>{
@@ -594,9 +600,9 @@ export default function Game(){
 
   /* Auto-save on phase change */
   useEffect(()=>{try{const raw=localStorage.getItem("hakone-career");if(raw){const c=JSON.parse(raw);if(Array.isArray(c))setCareerHOF(c);}}catch(e){}},[]);
-  useEffect(()=>{if(turn>0&&ph!=="title"&&rs.length>0&&rivals.length>0){doSave({tn,tc,gameYear,turn,rs,rivals,log,fac,prestige,hakQ,zenQ,zenQTeams,hakQTeams,sRes,prevHakone,prevZennihon,prevHakoneRanks,prevZennihonRanks,recs,yearHistory,scoutHist,autoRest,autoRestThreshold,hallOfFame,teamRecords,foreignAllowed,univAlias,ekAlias,draftResult,teamCtrl,sectionRecords,playerHOF,proteges,protegeSlots,consecutiveTripleCrowns,teamTitles,consecutiveIzumo,consecutiveZennihon,consecutiveHakone,ekStatsTotals,cumScoutPts,_ph:ph,_raceRes:(ph==="ek_race"?raceRes:null),_raceIdx:raceIdx,_curEk:curEk,_asgn:asgn});}},[ph,turn,fac,prestige,rs,rivals,recs,scoutHist,sRes,gameYear,hallOfFame,teamRecords,foreignAllowed,univAlias,ekAlias,draftResult,teamCtrl,sectionRecords,playerHOF,proteges,protegeSlots,consecutiveTripleCrowns,teamTitles,consecutiveIzumo,consecutiveZennihon,consecutiveHakone,ekStatsTotals,cumScoutPts,raceRes,raceIdx,curEk,asgn]);
+  useEffect(()=>{if(turn>0&&ph!=="title"&&rs.length>0&&rivals.length>0){doSave({tn,tc,gameYear,turn,rs,rivals,log,fac,prestige,hakQ,zenQ,zenQTeams,hakQTeams,sRes,prevHakone,prevZennihon,prevHakoneRanks,prevZennihonRanks,recs,yearHistory,scoutHist,autoRest,autoRestThreshold,hallOfFame,teamRecords,foreignAllowed,univAlias,ekAlias,draftResult,teamCtrl,sectionRecords,playerHOF,proteges,protegeSlots,consecutiveTripleCrowns,teamTitles,consecutiveIzumo,consecutiveZennihon,consecutiveHakone,ekStatsTotals,cumScoutPts,_ph:ph,_raceRes:(ph==="ek_race"?raceRes:null),_raceIdx:raceIdx,_curEk:curEk,_asgn:asgn,_recEv:recEv,_recAsgn:recAsgn,_qualSel:qualSel});}},[ph,turn,fac,prestige,rs,rivals,recs,scoutHist,sRes,gameYear,hallOfFame,teamRecords,foreignAllowed,univAlias,ekAlias,draftResult,teamCtrl,sectionRecords,playerHOF,proteges,protegeSlots,consecutiveTripleCrowns,teamTitles,consecutiveIzumo,consecutiveZennihon,consecutiveHakone,ekStatsTotals,cumScoutPts,raceRes,raceIdx,curEk,asgn,recEv,recAsgn,qualSel]);
 
-  const advance=useCallback(nt=>{setRivals(p=>growRivals(p));setForceRest(false);const ev=CAL[nt];if(!ev){setTurn(nt);setPh(nt>48?"year_end":"main");return;}
+  const advance=useCallback((nt,keepTraining)=>{setRivals(p=>growRivals(p));setForceRest(false);const ev=CAL[nt];if(!ev){setTurn(nt);setPh(nt>48?"year_end":(keepTraining?"training":"main"));return;}
     if(ev.t==="rec"){setRecEv(ev);setRecAsgn({});setRecRes(null);setSelR(null);setTurn(nt);setPh("rec_sel");}
     else if(ev.t==="half"){setTurn(nt);setQualSel([]);setSelR(null);setPh("half_sel");}
     else if(ev.t==="ek"){setCurEk(ev.eid);setAsgn({});setSelR(null);setTurn(nt);
@@ -630,7 +636,7 @@ export default function Game(){
     else if(ev.t==="camp"){setRs(p=>p.map(r=>{if(r.injured)return r;/* 夏合宿: 全能力に強化された成長(スタミナ重視) + コンディション大幅回復 */const campFx={speed:1,stamina:2,stability:1,uphill:1,downhill:1,solo:1,pack:1,track:1,road:2};let ns=applyGrowth(r,campFx,fac);ns=applyGrowth({...r,stats:ns},campFx,fac);return{...r,stats:ns,condition:Math.min(100,r.condition+20),fatigue:Math.max(0,r.fatigue-25)};}));setLog(l=>[...l,"T"+nt+" 🏕️ 夏合宿！選手が大きく成長した"]);setTurn(nt+1);setPh(nt+1>48?"year_end":"main");}
   },[hakQ,zenQ,fac,prevHakone,prevZennihon,prevHakoneRanks,prevZennihonRanks,rivals]);
 
-  const doTrain=useCallback(()=>{let injN=[];const ib=injB(fac);setRs(p=>p.map(r=>{if(r.injured){const l=r.injTurns-1;const rb=fac.medical>=3?1:0;return l-rb<=0?{...r,injured:false,injTurns:0,fatigue:Math.max(0,r.fatigue-3)}:{...r,injTurns:l-rb};}const shouldRest=forceRest||r.trn==="rest"||(autoRest&&r.fatigue>=autoRestThreshold);if(shouldRest){const restAmt=fac.medical+5+~~(Math.random()*11);return{...r,fatigue:Math.max(0,r.fatigue-restAmt),condition:Math.min(100,r.condition+12+~~(Math.random()*4))};}const tr=TRS.find(x=>x.id===r.trn)||TRS[0];const isPro=r.protege;const fxUse=isPro?Object.fromEntries(Object.entries(tr.fx).map(([k,v])=>[k,v*1.1])):tr.fx;const ns=applyGrowth(r,fxUse,fac);let nf=Math.max(0,Math.min(100,r.fatigue+(tr.f||0)));let nc=Math.max(10,Math.min(100,r.condition-2+~~(Math.random()*5)-2));if(Math.random()<(r.injRisk*0.15+nf*0.08)*0.004*ib){injN.push(r.name);const it=4+~~(Math.random()*6);const dns={...ns};SK.forEach(k=>{dns[k]=Math.max(15,dns[k]-2-~~(Math.random()*2));});return{...r,stats:dns,fatigue:nf,condition:nc,injured:true,injTurns:it};}return{...r,stats:ns,fatigue:nf,condition:nc};}));setLog(l=>[...l,"T"+turn+" "+moOf(turn)+wkOf(turn)+"週: "+(forceRest?"全員休養":"練習"),...injN.map(n=>"🏥 "+n+"が故障")]);advance(turn+1);},[turn,advance,fac,autoRest,autoRestThreshold,forceRest]);
+  const doTrain=useCallback(()=>{let injN=[];const ib=injB(fac);setRs(p=>p.map(r=>{if(r.injured){const l=r.injTurns-1;const rb=fac.medical>=3?1:0;return l-rb<=0?{...r,injured:false,injTurns:0,fatigue:Math.max(0,r.fatigue-3)}:{...r,injTurns:l-rb};}const shouldRest=forceRest||r.trn==="rest"||(autoRest&&r.fatigue>=autoRestThreshold);if(shouldRest){const restAmt=fac.medical+5+~~(Math.random()*11);return{...r,fatigue:Math.max(0,r.fatigue-restAmt),condition:Math.min(100,r.condition+12+~~(Math.random()*4))};}const tr=TRS.find(x=>x.id===r.trn)||TRS[0];const isPro=r.protege;const fxUse=isPro?Object.fromEntries(Object.entries(tr.fx).map(([k,v])=>[k,v*1.1])):tr.fx;const ns=applyGrowth(r,fxUse,fac);let nf=Math.max(0,Math.min(100,r.fatigue+(tr.f||0)));let nc=Math.max(10,Math.min(100,r.condition-2+~~(Math.random()*5)-2));if(Math.random()<(r.injRisk*0.15+nf*0.08)*0.004*ib){injN.push(r.name);const it=4+~~(Math.random()*6);const dns={...ns};SK.forEach(k=>{dns[k]=Math.max(15,dns[k]-2-~~(Math.random()*2));});return{...r,stats:dns,fatigue:nf,condition:nc,injured:true,injTurns:it};}return{...r,stats:ns,fatigue:nf,condition:nc};}));setLog(l=>[...l,"T"+turn+" "+moOf(turn)+wkOf(turn)+"週: "+(forceRest?"全員休養":"練習"),...injN.map(n=>"🏥 "+n+"が故障")]);advance(turn+1,true);},[turn,advance,fac,autoRest,autoRestThreshold,forceRest]);
 
   const runRec=useCallback(()=>{
     /* Apply training effect to all players (race day still gets training benefit) */
