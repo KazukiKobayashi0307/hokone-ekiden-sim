@@ -10,7 +10,7 @@ function genForeign(yr){
   const talent=0.7+Math.random()*0.3,peak=[2,3,3,3,4][~~(Math.random()*5)];
   const stats={},pot={};
   const _gM=yr===1?22:yr===2?17:yr===3?12:7;const _gS=yr===1?17:yr===2?12:yr===3?8:5;
-  SK.forEach(k=>{const isElite=(k==="speed"||k==="stamina");const mean=isElite?85:55;const sigma=isElite?15:20;const cap=isElite?110:100;const v=Math.min(cap,Math.max(10,Math.round(mean+(Math.random()+Math.random()+Math.random()-1.5)*2*sigma)));stats[k]=v;const growth=Math.max(0,Math.round(_gM+(Math.random()+Math.random()+Math.random()-1.5)*2*_gS));pot[k]=Math.min(isElite?110:120,v+growth);});
+  SK.forEach(k=>{const isElite=(k==="speed"||k==="stamina");const mean=isElite?85:55;const sigma=isElite?15:20;const cap=isElite?110:100;const v=Math.min(cap,Math.max(10,Math.round(mean+(Math.random()+Math.random()+Math.random()-1.5)*2*sigma)));stats[k]=v;const growth=Math.max(0,Math.round(_gM+(Math.random()+Math.random()+Math.random()-1.5)*2*_gS));pot[k]=Math.min(110,v+growth);});
   const r={id:_id++,name:FOREIGN_NAMES[~~(Math.random()*FOREIGN_NAMES.length)]+" "+FOREIGN_LAST[~~(Math.random()*FOREIGN_LAST.length)],year:yr||1,talent,peak,stats,pot,condition:90,injRisk:3+~~(Math.random()*8),fatigue:0,injured:false,injTurns:0,pb5k:null,pb10k:null,pbHalf:null,trn:"bal",history:[],foreign:true};
   r.pb5k=cTrk(5000,r);r.pb10k=cTrk(10000,r);r.condition=70+~~(Math.random()*25);return r;
 }
@@ -67,7 +67,7 @@ let _id=0;
 function genFresh(){
   const talent=0.3+Math.random(),peak=[1,2,2,3,3,3,4,4][~~(Math.random()*8)];
   const stats={},pot={};
-  SK.forEach(k=>{const v=Math.min(100,Math.max(10,Math.round(45+(Math.random()+Math.random()+Math.random()-1.5)*2*20)));stats[k]=v;const growth=Math.max(0,Math.round(22+(Math.random()+Math.random()+Math.random()-1.5)*2*17));pot[k]=Math.min(120,v+growth);});
+  SK.forEach(k=>{const v=Math.min(100,Math.max(10,Math.round(45+(Math.random()+Math.random()+Math.random()-1.5)*2*20)));stats[k]=v;const growth=Math.max(0,Math.round(22+(Math.random()+Math.random()+Math.random()-1.5)*2*17));pot[k]=Math.min(105,v+growth);});
   const r={id:_id++,name:mkN(),year:1,talent,peak,stats,pot,condition:90,injRisk:3+~~(Math.random()*8),fatigue:0,injured:false,injTurns:0,pb5k:null,pb10k:null,pbHalf:null,trn:"bal",history:[]};
   r.pb5k=cTrk(5000,r);r.pb10k=cTrk(10000,r);r.condition=65+~~(Math.random()*25);return r;}
 function genFreshYr(yr){
@@ -75,7 +75,7 @@ function genFreshYr(yr){
   const talent=0.3+Math.random(),peak=[1,2,2,3,3,3,4,4][~~(Math.random()*8)];
   const stats={},pot={};
   const _gM=yr===1?22:yr===2?17:yr===3?12:7;const _gS=yr===1?17:yr===2?12:yr===3?8:5;
-  SK.forEach(k=>{const v=Math.min(100,Math.max(10,Math.round(avgStat+(Math.random()+Math.random()+Math.random()-1.5)*2*20)));stats[k]=v;const growth=Math.max(0,Math.round(_gM+(Math.random()+Math.random()+Math.random()-1.5)*2*_gS));pot[k]=Math.min(120,v+growth);});
+  SK.forEach(k=>{const v=Math.min(100,Math.max(10,Math.round(avgStat+(Math.random()+Math.random()+Math.random()-1.5)*2*20)));stats[k]=v;const growth=Math.max(0,Math.round(_gM+(Math.random()+Math.random()+Math.random()-1.5)*2*_gS));pot[k]=Math.min(105,v+growth);});
   const r={id:_id++,name:mkN(),year:yr,talent,peak,stats,pot,condition:90,injRisk:3+~~(Math.random()*8),fatigue:0,injured:false,injTurns:0,pb5k:null,pb10k:null,pbHalf:null,trn:"bal",history:[]};
   r.pb5k=cTrk(5000,r);r.pb10k=cTrk(10000,r);r.condition=60+~~(Math.random()*30);return r;
 }
@@ -450,6 +450,12 @@ export default function Game(){
       (d.rs||[]).forEach(r=>{if(typeof r.id!=="number"||ownSeen.has(r.id)){r.id=++maxId;}ownSeen.add(r.id);});
       _id=maxId+1;
     }
+    /* Clamp any over-cap potentials from earlier bugged versions: JP=105, foreign=110 */
+    {
+      const clampPot=(r)=>{if(r.pot){const cap=r.foreign?110:105;SK.forEach(k=>{if(typeof r.pot[k]==="number"&&r.pot[k]>cap)r.pot[k]=cap;});}};
+      (d.rs||[]).forEach(clampPot);
+      (d.rivals||[]).forEach(rv=>(rv.runners||[]).forEach(clampPot));
+    }
     /* Backward compat: convert old fac.training number to trainSkill object */
     if(d.fac&&typeof d.fac.training==="number"&&!d.fac.trainSkill){const lv=d.fac.training;d.fac={...d.fac,trainSkill:{speed:lv,stamina:lv,stability:lv,uphill:lv,downhill:lv,solo:lv,pack:lv,track:lv,road:lv}};}
     if(d.rivals)d.rivals.forEach(rv=>{if(rv.fac&&typeof rv.fac.training==="number"&&!rv.fac.trainSkill){const lv=rv.fac.training;rv.fac={...rv.fac,trainSkill:{speed:lv,stamina:lv,stability:lv,uphill:lv,downhill:lv,solo:lv,pack:lv,track:lv,road:lv}};}});
@@ -612,10 +618,10 @@ export default function Game(){
   useEffect(()=>{try{const raw=localStorage.getItem("hakone-career");if(raw){const c=JSON.parse(raw);if(Array.isArray(c))setCareerHOF(c);}}catch(e){}},[]);
   useEffect(()=>{if(turn>0&&ph!=="title"&&rs.length>0&&rivals.length>0){doSave({tn,tc,gameYear,turn,rs,rivals,log,fac,prestige,hakQ,zenQ,zenQTeams,hakQTeams,sRes,prevHakone,prevZennihon,prevHakoneRanks,prevZennihonRanks,recs,yearHistory,scoutHist,autoRest,autoRestThreshold,hallOfFame,teamRecords,foreignAllowed,univAlias,ekAlias,draftResult,teamCtrl,sectionRecords,playerHOF,proteges,protegeSlots,consecutiveTripleCrowns,teamTitles,consecutiveIzumo,consecutiveZennihon,consecutiveHakone,ekStatsTotals,cumScoutPts,_ph:ph,_raceRes:(ph==="ek_race"?raceRes:null),_raceIdx:raceIdx,_curEk:curEk,_asgn:asgn,_recEv:recEv,_recAsgn:recAsgn,_qualSel:qualSel});}},[ph,turn,fac,prestige,rs,rivals,recs,scoutHist,sRes,gameYear,hallOfFame,teamRecords,foreignAllowed,univAlias,ekAlias,draftResult,teamCtrl,sectionRecords,playerHOF,proteges,protegeSlots,consecutiveTripleCrowns,teamTitles,consecutiveIzumo,consecutiveZennihon,consecutiveHakone,ekStatsTotals,cumScoutPts,raceRes,raceIdx,curEk,asgn,recEv,recAsgn,qualSel]);
 
-  const advance=useCallback((nt,keepTraining)=>{setRivals(p=>growRivals(p));setForceRest(false);setSelR(null);setFavOnly(false);const ev=CAL[nt];if(!ev){setTurn(nt);setPh(nt>48?"year_end":(keepTraining?"training":"main"));return;}
-    if(ev.t==="rec"){setRecEv(ev);setRecAsgn({});setRecRes(null);setSelR(null);setTurn(nt);setPh("rec_sel");}
-    else if(ev.t==="half"){setTurn(nt);setQualSel([]);setSelR(null);setPh("half_sel");}
-    else if(ev.t==="ek"){setCurEk(ev.eid);setAsgn({});setSelR(null);setTurn(nt);
+  const advance=useCallback((nt,keepTraining)=>{setRivals(p=>growRivals(p));setForceRest(false);setSelR(null);const ev=CAL[nt];if(!ev){setTurn(nt);setPh(nt>48?"year_end":(keepTraining?"training":"main"));return;}
+    if(ev.t==="rec"){setFavOnly(false);setRecEv(ev);setRecAsgn({});setRecRes(null);setSelR(null);setTurn(nt);setPh("rec_sel");}
+    else if(ev.t==="half"){setFavOnly(false);setTurn(nt);setQualSel([]);setSelR(null);setPh("half_sel");}
+    else if(ev.t==="ek"){setFavOnly(false);setCurEk(ev.eid);setAsgn({});setSelR(null);setTurn(nt);
       let q=false;
       if(ev.eid==="izumo")q=prevHakone!=null&&prevHakone<=10;
       else if(ev.eid==="zennihon")q=(prevZennihon!=null&&prevZennihon<=8)||zenQ;
@@ -631,7 +637,7 @@ export default function Game(){
         setLog(l=>[...l,"T"+nt+" "+ekAlias.hakone+"予選会（シード校のため免除）通過:"+rivRes.slice(0,10).map(t=>t.name).join(",")]);
         advance(nt+1);return;
       }
-      setQualSel([]);setPh("hak_sel");}
+      setQualSel([]);setFavOnly(false);setPh("hak_sel");}
     else if(ev.t==="zenQ"){setTurn(nt);
       const iAmSeeded=prevZennihon!=null&&prevZennihon<=8;
       if(iAmSeeded){
@@ -642,7 +648,7 @@ export default function Game(){
         setLog(l=>[...l,"T"+nt+" "+ekAlias.zennihon+"予選会（シード校のため免除）通過:"+rivRes.slice(0,7).map(t=>t.name).join(",")]);
         advance(nt+1);return;
       }
-      setQualSel([]);setPh("zen_q");}
+      setQualSel([]);setFavOnly(false);setPh("zen_q");}
     else if(ev.t==="camp"){setRs(p=>p.map(r=>{if(r.injured)return r;/* 夏合宿: 全能力に強化された成長(スタミナ重視) + コンディション大幅回復 */const campFx={speed:1,stamina:2,stability:1,uphill:1,downhill:1,solo:1,pack:1,track:1,road:2};let ns=applyGrowth(r,campFx,fac);ns=applyGrowth({...r,stats:ns},campFx,fac);return{...r,stats:ns,condition:Math.min(100,r.condition+20),fatigue:Math.max(0,r.fatigue-25)};}));setLog(l=>[...l,"T"+nt+" 🏕️ 夏合宿！選手が大きく成長した"]);setTurn(nt+1);setPh(nt+1>48?"year_end":"main");}
   },[hakQ,zenQ,fac,prevHakone,prevZennihon,prevHakoneRanks,prevZennihonRanks,rivals]);
 
@@ -1116,7 +1122,7 @@ export default function Game(){
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}><div><div style={{fontSize:12,color:"var(--ac)",fontWeight:700,letterSpacing:2}}>{teamName} {gameYear}年目</div><div className="sf" style={{fontSize:24,fontWeight:800}}>{moOf(turn)} 第{wkOf(turn)}週</div></div><div style={{textAlign:"right"}}><div style={{fontSize:12,color:"var(--t2)"}}>T{turn}/48 🏆{prestige}pt</div><div style={{fontSize:10,color:"var(--t3)"}}>オートセーブON</div></div></div>
     <div style={{display:"flex",gap:5,marginBottom:8,flexWrap:"wrap",fontSize:11}}>{[[ekAlias.zennihon+"予選",zenQ===true],[ekAlias.izumo+"(前"+ekAlias.hakone.slice(0,2)+(prevHakone||"--")+")",prevHakone!=null&&prevHakone<=10],[ekAlias.zennihon.slice(0,4)+"(前"+(prevZennihon||"--")+")",prevZennihon!=null&&prevZennihon<=8||zenQ],[ekAlias.hakone+"予選",hakQ===true],[ekAlias.hakone,sRes.hakone]].map(([n,v],i)=>(<div key={i} style={{padding:"3px 8px",borderRadius:5,background:"var(--card)",border:"1px solid var(--bdr)",color:v===true?"var(--grn)":(typeof v==="number"?(v<=3?"var(--gold)":"var(--t)"):"var(--t3)")}}>{n}:{v===true?"通過":(typeof v==="number"?v+"位":"---")}</div>))}</div>
     {up.length>0&&<div style={{marginBottom:10,padding:"8px 14px",borderRadius:8,background:"var(--card)",border:"1px solid var(--bdr)"}}><div style={{fontSize:11,color:"var(--t2)",fontWeight:700}}>📅 予定</div>{up.map((e,i)=>{const displayN=e.eid&&ekAlias[e.eid]?ekAlias[e.eid]:e.t==="zenQ"?(ekAlias.zennihon||"全日本大学駅伝")+"予選会":e.t==="hakQ"?(ekAlias.hakone||"箱根駅伝")+"予選会":e.n;return(<div key={i} style={{fontSize:13,color:e.turn===turn+1?"var(--ac)":"var(--t)",fontWeight:e.turn===turn+1?700:400}}>{moOf(e.turn)}{wkOf(e.turn)}週: {displayN}{e.turn===turn+1?" ← 次":""}</div>);})}</div>}
-    <button onClick={()=>{setSelR(null);setFavOnly(false);setPh("training");}} style={{width:"100%",padding:"16px",borderRadius:12,background:"var(--ac)",color:"#fff",fontWeight:800,fontSize:18,border:"none",marginBottom:12,boxShadow:"0 3px 10px rgba(0,85,170,0.3)"}}>▶ 練習・選手管理へ</button>
+    <button onClick={()=>{setSelR(null);setPh("training");}} style={{width:"100%",padding:"16px",borderRadius:12,background:"var(--ac)",color:"#fff",fontWeight:800,fontSize:18,border:"none",marginBottom:12,boxShadow:"0 3px 10px rgba(0,85,170,0.3)"}}>▶ 練習・選手管理へ</button>
     <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:8,marginBottom:12}}>
       <button onClick={()=>{setViewRiv(-1);setPh("rival_view");}} style={{padding:"14px",borderRadius:10,background:"var(--card)",color:"var(--ac)",fontWeight:700,border:"1px solid var(--bdr)",fontSize:14}}>🏫 大学一覧</button>
       <button onClick={()=>setPh("records")} style={{padding:"14px",borderRadius:10,background:"var(--card)",color:"var(--gold)",fontWeight:700,border:"1px solid var(--bdr)",fontSize:14}}>📊 記録・殿堂</button>
