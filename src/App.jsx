@@ -675,6 +675,17 @@ export default function Game(){
     }
     return[...p,rid];
   });},[rs]);
+  const toggleSel=useCallback((rid,cap)=>{setQualSel(p=>{
+    if(p.includes(rid))return p.filter(x=>x!==rid);
+    if(p.length>=cap)return p;
+    /* Limit: only 1 foreign student can be selected for own team */
+    const newR=rs.find(r=>r.id===rid);
+    if(newR&&newR.foreign){
+      const alreadyHasForeign=p.some(id=>{const r=rs.find(x=>x.id===id);return r&&r.foreign;});
+      if(alreadyHasForeign){alert("外国人留学生は1名までしか出走できません。");return p;}
+    }
+    return[...p,rid];
+  });},[rs]);
   const runHakQ=useCallback(()=>{const sel=qualSel.map(rid=>rs.find(r=>r.id===rid));const times=sel.map(r=>({runner:r,time:cHalf(r),univ:teamName,yr:r.year})).sort((a,b)=>a.time-b.time);const my=times.slice(0,10).reduce((s,t)=>s+t.time,0);setRs(p=>p.map(r=>{const d=times.find(x=>x.runner.id===r.id);if(!d)return r;const nr={...r,stats:raceGrow(r),fatigue:Math.min(100,r.fatigue+15)};if(!nr.pbHalf||d.time<nr.pbHalf)nr.pbHalf=d.time;return nr;}));setRecs(p=>addBR(p,"half",times.map(t=>({name:t.runner.name,univ:teamName,time:t.time,grade:t.runner.year,yr:gameYear,ev:ekAlias.hakone+"予選会",foreign:t.runner.foreign}))));
     /* Only non-seeded rivals participate in qualifier (seeded = prevHakone top 10) */
     const nonSeeded=rivals.filter(rv=>!(prevHakoneRanks[rv.name]&&prevHakoneRanks[rv.name]<=10));
@@ -708,7 +719,7 @@ export default function Game(){
   },[selR,asgnSet,asgn,rs]);
   const ek=curEk?EKS[curEk]:null,allAsgn=ek?Object.keys(asgn).length===ek.cnt:false;
 
-  const runEkCommon=useCallback((isWatch)=>{const secs=ek.sec;const nR=curEk==="izumo"?10:curEk==="zennihon"?15:20;
+  const runEkCommon=useCallback((isWatch,jumpToEnd)=>{const secs=ek.sec;const nR=curEk==="izumo"?10:curEk==="zennihon"?15:20;
     /* Select participating teams by actual qualification */
     let pool;
     if(curEk==="izumo"){
@@ -784,7 +795,7 @@ export default function Game(){
     setRecs(p=>{let n={...p};allT.forEach(t=>{const rList=t.isMe?rs:(rivals.find(rv=>rv.name===t.name)||{}).runners||[];n=addBR(n,"ek",secs.map((s,si)=>{const runner=rList.find(r=>r.name===t.st[si].runner);return{name:t.st[si].runner,univ:t.name,sec:s.n,time:t.st[si].time,ekiden:ek.name,yr:gameYear,grade:runner?runner.year:null,foreign:runner?runner.foreign:false};}));});return n;});
     /* Update rival runners */
     pool.forEach(rv=>{const rt=allT.find(t=>t.name===rv.name);if(!rt)return;setRivals(prev=>prev.map(rvp=>{if(rvp.name!==rv.name)return rvp;return{...rvp,runners:rvp.runners.map(r=>{const si=rt.st.findIndex(s=>s.runner===r.name);if(si<0)return r;const secRk=[...allT].sort((a,b)=>a.st[si].time-b.st[si].time).findIndex(t=>t.name===rv.name)+1;return{...r,stats:ekGrow(r,curEk),history:[...(r.history||[]),{ek:ek.name,yr:gameYear,sec:secs[si].n,time:rt.st[si].time,secRank:secRk}]};})};}));});
-    setRaceRes({allT,rank,isWatch,secs,newRecords:{}});setRaceIdx(0);setHiddenTeams({});
+    setRaceRes({allT,rank,isWatch,secs,newRecords:{}});setRaceIdx(jumpToEnd?secs.length-1:0);setHiddenTeams({});
     /* Update Hall of Fame: top 5 of all time per ekiden + yearly top 5 */
     const sortedRes=[...allT].sort((a,b)=>a.st[secs.length-1].cum-b.st[secs.length-1].cum);
     const yearlyTop5=sortedRes.slice(0,5).map((t,i)=>({rank:i+1,name:t.name,time:t.st[secs.length-1].cum,yr:gameYear}));
@@ -1357,7 +1368,7 @@ export default function Game(){
     return(<><style>{CSS}</style><div style={{minHeight:"100vh",background:"var(--bg)",padding:14}}><div style={{maxWidth:700,margin:"0 auto"}}><h2 className="sf" style={{marginBottom:6}}>{ekAlias.zennihon}予選会 — 出場選手選択</h2><p style={{fontSize:13,color:"var(--t2)",marginBottom:10}}>8名を選出。2名×4ブロックで10000m走。合計タイムで上位7校が{ekAlias.izumo}+{ekAlias.zennihon}出場。</p>
     <div style={{fontSize:15,fontWeight:700,color:"var(--ac)",marginBottom:8}}>選出: {qualSel.length}/8</div>
     <SortB sm={sm} setSm={setSm} yf={yf} setYf={setYf} favOnly={favOnly} setFavOnly={setFavOnly}/>
-    {healthy.map(r=>(<MR key={r.id} r={r} sel={qualSel.includes(r.id)} asgn={qualSel.length>=8&&!qualSel.includes(r.id)} onClick={()=>{setQualSel(p=>p.includes(r.id)?p.filter(x=>x!==r.id):p.length>=8?p:[...p,r.id]);}} showG/>))}
+    {healthy.map(r=>(<MR key={r.id} r={r} sel={qualSel.includes(r.id)} asgn={qualSel.length>=8&&!qualSel.includes(r.id)} onClick={()=>toggleSel(r.id,8)} showG/>))}
     {qualSel.length===8&&<div style={{textAlign:"center",marginTop:10}} className="fi"><button onClick={()=>{
       const sel8=qualSel.map(rid=>rs.find(r=>r.id===rid));
       const myTimes=sel8.map(r=>({runner:r,time:cTrk(10000,r)}));
@@ -1404,7 +1415,7 @@ export default function Game(){
 
   if(ph==="hak_sel"){const healthy=sortR(rs.filter(r=>!r.injured&&((!yf||yf.length===0)||yf.includes(r.year))).filter(r=>!favOnly||r.fav||!rs.some(x=>x.fav)),sm);return(<><style>{CSS}</style><div style={{minHeight:"100vh",background:"var(--bg)",padding:14}}><div style={{maxWidth:700,margin:"0 auto"}}><h2 className="sf" style={{marginBottom:4}}>{ekAlias.hakone||"箱根駅伝"}予選会</h2><div style={{fontWeight:700,color:"var(--ac)",marginBottom:8}}>選出: {qualSel.length}/12</div><SortB sm={sm} setSm={setSm} yf={yf} setYf={setYf} favOnly={favOnly} setFavOnly={setFavOnly}/>{healthy.map(r=>(<MR key={r.id} r={r} sel={qualSel.includes(r.id)} asgn={qualSel.length>=12&&!qualSel.includes(r.id)} onClick={()=>toggleQS(r.id)} showG/>))}{qualSel.length>=10&&<div style={{textAlign:"center",marginTop:10}} className="fi"><button onClick={runHakQ} style={{padding:"14px 52px",borderRadius:50,background:"var(--ac)",color:"#fff",fontWeight:800}}>予選会スタート ({qualSel.length}名)</button></div>}</div></div></>);}
 
-  if(ph==="half_sel"){const healthy=sortR(rs.filter(r=>!r.injured&&((!yf||yf.length===0)||yf.includes(r.year))).filter(r=>!favOnly||r.fav||!rs.some(x=>x.fav)),sm);return(<><style>{CSS}</style><div style={{minHeight:"100vh",background:"var(--bg)",padding:14}}><div style={{maxWidth:700,margin:"0 auto"}}><h2 className="sf" style={{marginBottom:4}}>{(CAL[turn].eid?ekAlias[CAL[turn].eid]:null)||CAL[turn].n}</h2><div style={{fontWeight:700,color:"var(--ac)",marginBottom:8}}>選出: {qualSel.length}/8</div><SortB sm={sm} setSm={setSm} yf={yf} setYf={setYf} favOnly={favOnly} setFavOnly={setFavOnly}/>{healthy.map(r=>(<MR key={r.id} r={r} sel={qualSel.includes(r.id)} asgn={qualSel.length>=8&&!qualSel.includes(r.id)} onClick={()=>{setQualSel(p=>p.includes(r.id)?p.filter(x=>x!==r.id):p.length>=8?p:[...p,r.id]);}} showG/>))}<div style={{display:"flex",gap:8,justifyContent:"center",marginTop:10}}>{qualSel.length>0&&<button onClick={()=>{/* Apply training effect on half day */
+  if(ph==="half_sel"){const healthy=sortR(rs.filter(r=>!r.injured&&((!yf||yf.length===0)||yf.includes(r.year))).filter(r=>!favOnly||r.fav||!rs.some(x=>x.fav)),sm);return(<><style>{CSS}</style><div style={{minHeight:"100vh",background:"var(--bg)",padding:14}}><div style={{maxWidth:700,margin:"0 auto"}}><h2 className="sf" style={{marginBottom:4}}>{(CAL[turn].eid?ekAlias[CAL[turn].eid]:null)||CAL[turn].n}</h2><div style={{fontWeight:700,color:"var(--ac)",marginBottom:8}}>選出: {qualSel.length}/8</div><SortB sm={sm} setSm={setSm} yf={yf} setYf={setYf} favOnly={favOnly} setFavOnly={setFavOnly}/>{healthy.map(r=>(<MR key={r.id} r={r} sel={qualSel.includes(r.id)} asgn={qualSel.length>=8&&!qualSel.includes(r.id)} onClick={()=>toggleSel(r.id,8)} showG/>))}<div style={{display:"flex",gap:8,justifyContent:"center",marginTop:10}}>{qualSel.length>0&&<button onClick={()=>{/* Apply training effect on half day */
         const trainedRs=rs.map(r=>{if(r.injured||r.trn==="rest")return r;const tr=TRS.find(x=>x.id===r.trn)||TRS[0];return{...r,stats:applyGrowth(r,tr.fx,fac)};});
         const sel=qualSel.map(rid=>trainedRs.find(r=>r.id===rid));const rivH=[];rivals.forEach(rv=>{rv.runners.filter(r=>!r.injured).forEach(r=>{if(Math.random()<0.12)rivH.push({...r,univName:rv.name});});});const times=[...sel.map(r=>({runner:r,time:cHalf(r),univ:teamName,yr:r.year})),...rivH.map(r=>({runner:r,time:cHalf(r),univ:r.univName,yr:r.year}))].sort((a,b)=>a.time-b.time);setRs(trainedRs.map(r=>{const d=times.find(x=>x.runner.id===r.id&&x.univ===teamName);if(!d)return r;const nr={...r,stats:raceGrow(r),fatigue:Math.min(100,r.fatigue+25)};if(!nr.pbHalf||d.time<nr.pbHalf)nr.pbHalf=d.time;return nr;}));
     setRivals(prev=>prev.map(rv=>{const upd=rv.runners.map(r=>{const d=times.find(x=>x.runner.id===r.id&&x.univ===rv.name);if(!d)return r;const nr={...r,stats:raceGrow(r)};if(!nr.pbHalf||d.time<nr.pbHalf)nr.pbHalf=d.time;return nr;});return{...rv,runners:upd};}));
@@ -1417,7 +1428,7 @@ export default function Game(){
         </div>
         <div style={{textAlign:"center"}}><button onClick={()=>runEkCommon(false)} style={{padding:"14px 60px",borderRadius:50,background:"var(--ac)",color:"#fff",fontWeight:800,fontSize:17}}>🏃 レース開始</button></div></div>}</div></div></>);}
 
-  if(ph==="ek_watch"&&ek)return(<><style>{CSS}</style><div style={{minHeight:"100vh",background:"var(--bg)",padding:14}}><div style={{maxWidth:600,margin:"0 auto",textAlign:"center"}} className="fi"><h2 className="sf" style={{marginBottom:8}}>{ekAlias[curEk]||ek.name}</h2><p style={{color:"var(--t2)",marginBottom:16}}>出場権なし — 観戦</p><button onClick={()=>runEkCommon(true)} style={{padding:"14px 48px",borderRadius:50,background:"var(--gold)",color:"#fff",fontWeight:800}}>📺 観戦</button><button onClick={()=>advance(turn+1)} style={{padding:"12px 30px",borderRadius:50,background:"var(--card)",color:"var(--t2)",marginLeft:10,border:"1px solid var(--bdr)"}}>スキップ</button></div></div></>);
+  if(ph==="ek_watch"&&ek)return(<><style>{CSS}</style><div style={{minHeight:"100vh",background:"var(--bg)",padding:14}}><div style={{maxWidth:600,margin:"0 auto",textAlign:"center"}} className="fi"><h2 className="sf" style={{marginBottom:8}}>{ekAlias[curEk]||ek.name}</h2><p style={{color:"var(--t2)",marginBottom:16}}>出場権なし — 観戦</p><button onClick={()=>runEkCommon(true)} style={{padding:"14px 48px",borderRadius:50,background:"var(--gold)",color:"#fff",fontWeight:800}}>📺 観戦</button><button onClick={()=>runEkCommon(true,true)} style={{padding:"12px 30px",borderRadius:50,background:"var(--card)",color:"var(--t2)",marginLeft:10,border:"1px solid var(--bdr)"}}>結果だけ見る</button></div></div></>);
 
   if(ph==="ek_race"&&raceRes){const isW=raceRes.isWatch,secs=ek.sec,ci=raceIdx,fin=ci>=secs.length-1;const myT=isW?null:raceRes.allT.find(t=>t.isMe);const secRk=[...raceRes.allT].sort((a,b)=>a.st[ci].time-b.st[ci].time),cumRk=[...raceRes.allT].sort((a,b)=>a.st[ci].cum-b.st[ci].cum);const mySR=isW?"-":(secRk.findIndex(t=>t.isMe)+1),myCR=isW?"-":(cumRk.findIndex(t=>t.isMe)+1);return(<><style>{CSS}</style><div style={{minHeight:"100vh",background:"var(--bg)",padding:14}}><div style={{maxWidth:700,margin:"0 auto"}}>
     <div style={{textAlign:"center",marginBottom:10}}><div style={{fontSize:12,color:"var(--ac)",letterSpacing:4,fontWeight:700}}>{ekAlias[curEk]||ek.name}{isW?" (観戦)":""}</div>{!isW&&<><div style={{fontFamily:"monospace",fontSize:40,fontWeight:900}}>{fmt(myT.st[ci].cum)}</div><div style={{color:"var(--t2)"}}>{teamName} 総合<span style={{fontWeight:900,fontSize:16,color:myCR<=3?"var(--gold)":"var(--t)",marginLeft:8}}>{myCR}位</span></div></>}{!fin&&<div style={{fontSize:10,color:"var(--t3)",marginTop:4}}>※ ここで閉じても、次回ロード時にこの区間から再開できます</div>}</div>
