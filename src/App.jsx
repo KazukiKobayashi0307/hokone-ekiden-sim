@@ -124,7 +124,7 @@ function genT48(str,univName,fAllowed){
 function gRate(r){const d=Math.abs(r.year-r.peak);return r.talent*(d===0?2:d===1?1:0.5);}
 function growB(f,skillKey){if(!f)return 1;const ts=f.trainSkill||{};const lv=skillKey?(ts[skillKey]||f.training||1):(f.training||1);const co=f.coaching||1;return (1+(lv-1)*1/9)*(1+(co-1)*1/18);}
 function injB(f){return Math.max(0.1,1-f.medical*0.08);}
-function injPct(r,f){if(r.trn==="rest"||r.injured)return 0;return Math.round((r.injRisk*0.15+r.fatigue*0.08)*0.4*injB(f)*100)/100;}
+function injPct(r,f){if(r.trn==="rest"||r.injured)return 0;return Math.round((r.injRisk*0.4+r.fatigue*0.08)*0.4*injB(f)*100)/100;}
 function eSec(r,s){const t=r.stats;const km=s.km;switch(s.t){case"mountain":return t.uphill*0.35+t.stamina*0.25+t.road*0.15+t.solo*0.15+t.stability*0.1;case"downhill":return t.downhill*0.35+t.speed*0.2+t.road*0.15+t.stability*0.15+t.stamina*0.15;default:{const spd=((25-km)*t.speed+km*t.stamina)/25;return spd*0.75+t.road*0.1+t.pack*0.08+t.stability*0.07;}}}
 function e10k(r){return r.stats.speed*0.25+r.stats.stamina*0.3+r.stats.track*0.15+r.stats.road*0.1+r.stats.stability*0.2;}
 function eHf(r){return r.stats.stamina*0.3+r.stats.speed*0.15+r.stats.road*0.25+r.stats.solo*0.15+r.stats.stability*0.15;}
@@ -138,12 +138,13 @@ function eHf(r){return r.stats.stamina*0.3+r.stats.speed*0.15+r.stats.road*0.25+
    slopeFactor = 1+(up/km)*0.00369*(1+(100-uph)/500) - (dn/km)*0.00122*(1+(100-dnh)/1000)
    time = peakSpeedTime * baseFactor * stabFactor * condFactor * slopeFactor
 */
+function gauss(m,sd){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return m+sd*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
 function calcSeg(segKm,totalKm,spd,sta,surf,pk,stab,cond,slope,up,dn,uph,dnh){
   const combat=8*((30-totalKm)*spd+totalKm*sta)/30+surf+pk;
   const peakSpd=(-0.00003*Math.pow(totalKm,4)+0.0042*Math.pow(totalKm,3)-0.182*Math.pow(totalKm,2)+3.4519*totalKm+142.78);
   const baseFactor=Math.max(0.05,1+(1000-combat)/4800);
   const stabFactor=1+(Math.random()*0.45)/Math.max(10,stab);
-  const condFactor=1+(Math.random()*0.45)/Math.max(10,cond);
+  const condFactor=1+(Math.max(0,gauss(0.1,0.2))+(100-cond)/400)/Math.max(10,cond);
   let slopeFactor=1;
   if(up!=null&&dn!=null){
     slopeFactor=1+(up/totalKm)*0.00369*(1+(100-(uph||50))/500)-(dn/totalKm)*0.00122*(1+(100-(dnh||50))/1000);
@@ -162,7 +163,7 @@ function cTrk(d,r){
   const condFactor=1+(Math.random()*0.45)/Math.max(10,r.condition-((r.fatigue||0)/2));
   return Math.max(1,Math.round(peakSpd*baseFactor*stabFactor*condFactor));
 }
-function cHalf(r){return cSec(r,{km:21.1,t:"flat"});}
+function cHalf(r){return Math.max(1,Math.round(cSec(r,{km:21.1,t:"flat"})*0.99));}
 function eSecD(r,s){
   const t=r.stats;const km=s.km;
   const surf=(s.t==="flat"||s.t==="hill")?t.road:(s.t==="mountain"?t.uphill:(s.t==="downhill"?t.downhill:t.road));
@@ -313,8 +314,12 @@ function ekGrow(r,ekKey){
   return ns;
 }
 function raceGrow(r){const ns={...r.stats};SK.forEach(k=>{if(Math.random()<0.3)ns[k]=Math.min(100,ns[k]+1);});return ns;}
-function growRivals(rivs){const balFx=TRS[0].fx;return rivs.map(rv=>{return{...rv,runners:rv.runners.map(r=>{if(r.injured){const l=r.injTurns-1;return l<=0?{...r,injured:false,injTurns:0}:{...r,injTurns:l};}
-  const ns=applyGrowth(r,balFx,rv.fac);
+function growRivals(rivs,monthIdx){const balFx=TRS[0].fx;const baseFx=(TRS.find(t=>t.id==="base")||TRS[0]).fx;
+  /* 2〜7月(MO idx 10,11,0,1,2,3)=基本走力 / 8月〜1月(idx 4..9)=バランス */
+  const isBaseSeason=(monthIdx>=4&&monthIdx<=9)?false:true;
+  const useFx=isBaseSeason?baseFx:balFx;
+  return rivs.map(rv=>{return{...rv,runners:rv.runners.map(r=>{if(r.injured){const l=r.injTurns-1;return l<=0?{...r,injured:false,injTurns:0}:{...r,injTurns:l};}
+  const ns=applyGrowth(r,useFx,rv.fac);
   return{...r,stats:ns,condition:Math.max(30,Math.min(100,r.condition+~~(Math.random()*7)-3))};
 })};});}function graduateR(rivs){return rivs.map(rv=>{const kept=rv.runners.filter(r=>r.year<4).map(r=>({...r,year:r.year+1}));const nw=[];for(let i=kept.length;i<48;i++)nw.push(genR(rv.str,1));return{...rv,runners:[...kept,...nw]};});}
 /* ═══ SCOUT SCORING: 3-year history ═══ */
@@ -679,7 +684,7 @@ export default function Game(){
   useEffect(()=>{try{window.scrollTo(0,0);if(document.scrollingElement)document.scrollingElement.scrollTop=0;}catch(e){}},[ph,raceIdx]);
   useEffect(()=>{if(turn>0&&ph!=="title"&&rs.length>0&&rivals.length>0){doSave({tn,tc,gameYear,turn,rs,rivals,log,fac,prestige,hakQ,zenQ,zenQTeams,hakQTeams,sRes,prevHakone,prevZennihon,prevHakoneRanks,prevZennihonRanks,recs,yearHistory,scoutHist,autoRest,autoRestThreshold,hallOfFame,teamRecords,foreignAllowed,univAlias,ekAlias,draftResult,teamCtrl,sectionRecords,playerHOF,proteges,protegeSlots,consecutiveTripleCrowns,teamTitles,consecutiveIzumo,consecutiveZennihon,consecutiveHakone,ekStatsTotals,cumScoutPts,consecutiveHakoneSeed,scholarshipSlots,_ph:ph,_raceRes:(ph==="ek_race"?raceRes:null),_raceIdx:raceIdx,_curEk:curEk,_asgn:asgn,_recEv:recEv,_recAsgn:recAsgn,_qualSel:qualSel});}},[ph,turn,fac,prestige,rs,rivals,recs,scoutHist,sRes,gameYear,hallOfFame,teamRecords,foreignAllowed,univAlias,ekAlias,draftResult,teamCtrl,sectionRecords,playerHOF,proteges,protegeSlots,consecutiveTripleCrowns,teamTitles,consecutiveIzumo,consecutiveZennihon,consecutiveHakone,ekStatsTotals,cumScoutPts,consecutiveHakoneSeed,scholarshipSlots,raceRes,raceIdx,curEk,asgn,recEv,recAsgn,qualSel]);
 
-  const advance=useCallback((nt,keepTraining)=>{setRivals(p=>growRivals(p));setForceRest(false);setSelR(null);const ev=CAL[nt];if(!ev){setTurn(nt);setPh(nt>48?"year_end":(keepTraining?"training":"main"));return;}
+  const advance=useCallback((nt,keepTraining)=>{setRivals(p=>growRivals(p,~~((nt-1)/4)));setForceRest(false);setSelR(null);const ev=CAL[nt];if(!ev){setTurn(nt);setPh(nt>48?"year_end":(keepTraining?"training":"main"));return;}
     if(ev.t==="rec"){setRecEv(ev);setRecAsgn({});setRecRes(null);setSelR(null);setTurn(nt);setPh("rec_sel");}
     else if(ev.t==="half"){setFavOnly(false);setTurn(nt);setQualSel([]);setSelR(null);setPh("half_sel");}
     else if(ev.t==="ek"){setFavOnly(false);setCurEk(ev.eid);setAsgn({});setSelR(null);setTurn(nt);
@@ -713,7 +718,7 @@ export default function Game(){
 
   },[hakQ,zenQ,fac,prevHakone,prevZennihon,prevHakoneRanks,prevZennihonRanks,rivals]);
 
-  const doTrain=useCallback(()=>{let injN=[];const ib=injB(fac);setRs(p=>p.map(r=>{if(r.injured){const l=r.injTurns-1;const rb=fac.medical>=3?1:0;return l-rb<=0?{...r,injured:false,injTurns:0,fatigue:Math.max(0,r.fatigue-3)}:{...r,injTurns:l-rb};}const shouldRest=forceRest||r.trn==="rest"||(autoRest&&r.fatigue>=autoRestThreshold);if(shouldRest){const restAmt=fac.medical+5+~~(Math.random()*11);return{...r,fatigue:Math.max(0,r.fatigue-restAmt),condition:Math.min(100,r.condition+12+~~(Math.random()*4))};}const tr=TRS.find(x=>x.id===r.trn)||TRS[0];const isPro=r.protege;const fxUse=isPro?Object.fromEntries(Object.entries(tr.fx).map(([k,v])=>[k,v*1.2])):tr.fx;const ns=applyGrowth(r,fxUse,fac);let nf=Math.max(0,Math.min(100,r.fatigue+(tr.f||0)));let nc=Math.max(10,Math.min(100,r.condition-2+~~(Math.random()*5)-2));if(Math.random()<(r.injRisk*0.15+nf*0.08)*0.004*ib){injN.push(r.name);const it=4+~~(Math.random()*6);const dns={...ns};SK.forEach(k=>{dns[k]=Math.max(15,dns[k]-2-~~(Math.random()*2));});return{...r,stats:dns,fatigue:nf,condition:nc,injured:true,injTurns:it};}return{...r,stats:ns,fatigue:nf,condition:nc};}));setLog(l=>[...l,"T"+turn+" "+moOf(turn)+wkOf(turn)+"週: "+(forceRest?"全員休養":"練習"),...injN.map(n=>"🏥 "+n+"が故障")]);advance(turn+1,true);},[turn,advance,fac,autoRest,autoRestThreshold,forceRest]);
+  const doTrain=useCallback(()=>{let injN=[];const ib=injB(fac);setRs(p=>p.map(r=>{if(r.injured){const l=r.injTurns-1;const rb=fac.medical>=3?1:0;return l-rb<=0?{...r,injured:false,injTurns:0,fatigue:Math.max(0,r.fatigue-3)}:{...r,injTurns:l-rb};}const shouldRest=forceRest||r.trn==="rest"||(autoRest&&r.fatigue>=autoRestThreshold);if(shouldRest){const restAmt=fac.medical+5+~~(Math.random()*11);return{...r,fatigue:Math.max(0,r.fatigue-restAmt),condition:Math.min(100,r.condition+12+~~(Math.random()*4))};}const tr=TRS.find(x=>x.id===r.trn)||TRS[0];const isPro=r.protege;const fxUse=isPro?Object.fromEntries(Object.entries(tr.fx).map(([k,v])=>[k,v*1.2])):tr.fx;const ns=applyGrowth(r,fxUse,fac);let nf=Math.max(0,Math.min(100,r.fatigue+(tr.f||0)));let nc=Math.max(10,Math.min(100,r.condition-2+~~(Math.random()*5)-2));if(Math.random()<(r.injRisk*0.4+nf*0.08)*0.004*ib){injN.push(r.name);const it=Math.max(2,Math.round(gauss(6,15)));const dmg=Math.max(0,Math.round(gauss(it/2,it/2)));const dns={...ns};SK.forEach(k=>{dns[k]=Math.max(15,dns[k]-dmg);});return{...r,stats:dns,fatigue:nf,condition:nc,injured:true,injTurns:it};}return{...r,stats:ns,fatigue:nf,condition:nc};}));setLog(l=>[...l,"T"+turn+" "+moOf(turn)+wkOf(turn)+"週: "+(forceRest?"全員休養":"練習"),...injN.map(n=>"🏥 "+n+"が故障")]);advance(turn+1,true);},[turn,advance,fac,autoRest,autoRestThreshold,forceRest]);
 
   const doFreeRace=useCallback(()=>{
     const wk=wkOf(turn);const dist=wk===1?5000:wk===2?10000:wk===3?"half":null;
@@ -726,7 +731,7 @@ export default function Game(){
       if(shouldRest){const restAmt=fac.medical+5+~~(Math.random()*11);return{...r,fatigue:Math.max(0,r.fatigue-restAmt),condition:Math.min(100,r.condition+12+~~(Math.random()*4))};}
       const tr=TRS.find(x=>x.id===r.trn)||TRS[0];const fxUse=r.protege?Object.fromEntries(Object.entries(tr.fx).map(([k,v])=>[k,v*1.2])):tr.fx;const ns=applyGrowth(r,fxUse,fac);
       let nf=Math.max(0,Math.min(100,r.fatigue+(tr.f||0)));let nc=Math.max(10,Math.min(100,r.condition-2+~~(Math.random()*5)-2));
-      if(Math.random()<(r.injRisk*0.15+nf*0.08)*0.004*ib){injN.push(r.name);const it=4+~~(Math.random()*6);const dns={...ns};SK.forEach(k=>{dns[k]=Math.max(15,dns[k]-2-~~(Math.random()*2));});return{...r,stats:dns,fatigue:nf,condition:nc,injured:true,injTurns:it};}
+      if(Math.random()<(r.injRisk*0.4+nf*0.08)*0.004*ib){injN.push(r.name);const it=Math.max(2,Math.round(gauss(6,15)));const dmg=Math.max(0,Math.round(gauss(it/2,it/2)));const dns={...ns};SK.forEach(k=>{dns[k]=Math.max(15,dns[k]-dmg);});return{...r,stats:dns,fatigue:nf,condition:nc,injured:true,injTurns:it};}
       return{...r,stats:ns,fatigue:nf,condition:nc};
     });
     /* 2) Run the time trial for selected participants (+ random rivals for the leaderboard) */
